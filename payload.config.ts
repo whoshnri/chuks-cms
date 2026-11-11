@@ -10,7 +10,10 @@ import { Comments } from './src/collections/Comments'
 import { ContactSubmissions } from './src/collections/ContactSubmissions'
 import { Media } from './src/collections/Media'
 
-const databaseURL = runtimeEnv.HYPERDRIVE?.connectionString || process.env.DATABASE_URL || runtimeEnv.DATABASE_URL || 'postgres://placeholder:placeholder@127.0.0.1:5432/placeholder'
+// The Payload Postgres adapter keeps a long-lived `pg` client open. Use Neon's
+// managed pool directly until the adapter can be moved to a Hyperdrive-aware
+// connection lifecycle.
+const databaseURL = process.env.DATABASE_URL || runtimeEnv.DATABASE_URL || runtimeEnv.HYPERDRIVE?.connectionString || 'postgres://placeholder:placeholder@127.0.0.1:5432/placeholder'
 const isProduction = process.env.NODE_ENV === 'production'
 const productionServerURL = 'https://chuks-payload-cms.chuks-etuka.workers.dev'
 
