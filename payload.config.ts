@@ -25,9 +25,10 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: databaseURL,
-      // Payload retains a client for reconnect handling and hooks can issue nested queries.
+      // Leave room for nested hooks while allowing idle Worker connections to close.
       max: 5,
       connectionTimeoutMillis: 30_000,
+      allowExitOnIdle: true,
     },
     push: !isProduction && process.env.PAYLOAD_PUSH !== 'false',
   }),

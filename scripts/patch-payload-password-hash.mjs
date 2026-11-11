@@ -14,3 +14,19 @@ if (source.includes(current)) {
 } else if (!source.includes(compatible)) {
   throw new Error('Unable to find Payload password-hash iteration setting.')
 }
+
+// Payload keeps one `pg` client checked out forever to listen for reconnects.
+// That leaves a live TCP handle in a Worker and prevents the request from
+// completing. Keep the listener, but return the client to the pool.
+const postgresEntry = import.meta.resolve('@payloadcms/db-postgres')
+const postgresConnectModule = new URL('./connect.js', postgresEntry)
+const postgresSource = await readFile(postgresConnectModule, 'utf8')
+const heldClient = '    });\n};\nexport const connect = async function connect'
+const releasedClient = '    });\n    result.release();\n};\nexport const connect = async function connect'
+
+if (postgresSource.includes(heldClient)) {
+  await writeFile(postgresConnectModule, postgresSource.replace(heldClient, releasedClient))
+  console.info('Configured Payload Postgres pooling for Cloudflare Workers.')
+} else if (!postgresSource.includes(releasedClient)) {
+  throw new Error('Unable to find Payload Postgres connection lifecycle.')
+}
