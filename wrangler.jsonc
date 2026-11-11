@@ -5,6 +5,7 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-07",
   "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"],
+  "placement": { "mode": "smart" },
   "secrets": {
     "required": [
       "PAYLOAD_SECRET",
@@ -29,7 +30,7 @@
       "head_sampling_rate": 1,
       "persist": true
     },
-    "issue_detection": {
+    "issues": {
       "enabled": true
     }
   },

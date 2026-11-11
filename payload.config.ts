@@ -15,7 +15,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || runtimeEnv.PAYLOAD_SECRET || 'local-only-change-this-payload-secret-before-deploy',
-  serverURL: process.env.CMS_PUBLIC_URL || runtimeEnv.CMS_PUBLIC_URL,
+  serverURL: runtimeEnv.CMS_PUBLIC_URL || process.env.CMS_PUBLIC_URL,
   admin: { user: Users.slug, importMap: { baseDir: process.cwd() } },
   editor: lexicalEditor(),
   collections: [Users, Posts, Categories, Comments, ContactSubmissions, Media],
