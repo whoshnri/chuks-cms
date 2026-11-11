@@ -10,7 +10,7 @@ import { Comments } from './src/collections/Comments'
 import { ContactSubmissions } from './src/collections/ContactSubmissions'
 import { Media } from './src/collections/Media'
 
-const databaseURL = process.env.DATABASE_URL || runtimeEnv.DATABASE_URL || runtimeEnv.HYPERDRIVE?.connectionString || 'postgres://placeholder:placeholder@127.0.0.1:5432/placeholder'
+const databaseURL = runtimeEnv.HYPERDRIVE?.connectionString || process.env.DATABASE_URL || runtimeEnv.DATABASE_URL || 'postgres://placeholder:placeholder@127.0.0.1:5432/placeholder'
 const isProduction = process.env.NODE_ENV === 'production'
 const productionServerURL = 'https://chuks-payload-cms.chuks-etuka.workers.dev'
 
