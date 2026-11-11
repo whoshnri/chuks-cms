@@ -7,7 +7,8 @@ if (!email || !password) throw new Error('Set PAYLOAD_ADMIN_EMAIL and PAYLOAD_AD
 const payload = await getPayload({ config })
 const existing = await payload.find({ collection: 'users', where: { email: { equals: email } }, limit: 1, overrideAccess: true })
 if (existing.docs.length) {
-  console.info('A CMS user already exists for that email.')
+  await payload.update({ collection: 'users', id: existing.docs[0].id, data: { password }, overrideAccess: true })
+  console.info('CMS admin password updated.')
   process.exit(0)
 }
 await payload.create({ collection: 'users', data: { email, password }, overrideAccess: true })
