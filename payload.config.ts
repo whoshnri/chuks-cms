@@ -12,10 +12,11 @@ import { Media } from './src/collections/Media'
 
 const databaseURL = process.env.DATABASE_URL || runtimeEnv.DATABASE_URL || runtimeEnv.HYPERDRIVE?.connectionString || 'postgres://placeholder:placeholder@127.0.0.1:5432/placeholder'
 const isProduction = process.env.NODE_ENV === 'production'
+const productionServerURL = 'https://chuks-payload-cms.chuks-etuka.workers.dev'
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || runtimeEnv.PAYLOAD_SECRET || 'local-only-change-this-payload-secret-before-deploy',
-  serverURL: runtimeEnv.CMS_PUBLIC_URL || process.env.CMS_PUBLIC_URL,
+  serverURL: isProduction ? productionServerURL : (process.env.CMS_PUBLIC_URL || runtimeEnv.CMS_PUBLIC_URL),
   admin: { user: Users.slug, importMap: { baseDir: process.cwd() } },
   editor: lexicalEditor(),
   collections: [Users, Posts, Categories, Comments, ContactSubmissions, Media],
