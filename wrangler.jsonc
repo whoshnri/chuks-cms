@@ -1,0 +1,21 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "chuks-payload-cms",
+  "account_id": "e7bc1e94e93269f2a47be412ccaed3c9",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-07",
+  "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"],
+  "secrets": {
+    "required": [
+      "PAYLOAD_SECRET",
+      "CMS_INTERNAL_TOKEN",
+      "DATABASE_URL",
+      "CMS_PUBLIC_URL",
+      "R2_BUCKET",
+      "R2_ENDPOINT",
+      "R2_ACCESS_KEY_ID",
+      "R2_SECRET_ACCESS_KEY"
+    ]
+  },
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" }
+}

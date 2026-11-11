@@ -1,0 +1,42 @@
+{
+  "name": "@chuks/cms",
+  "private": true,
+  "scripts": {
+    "dev": "bun --env-file=.dev.vars ./node_modules/next/dist/bin/next dev --webpack --port 3001",
+    "build": "next build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "typecheck": "tsc --noEmit",
+    "payload": "payload",
+    "migrate": "payload migrate",
+    "migrate:create": "payload migrate:create",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "bun --env-file=.dev.vars scripts/generate-importmap.ts",
+    "seed": "bun --env-file=.dev.vars seed.ts",
+    "create-admin": "bun run create-admin.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.900.0",
+    "@payloadcms/db-postgres": "3.92.1",
+    "@payloadcms/next": "3.92.1",
+    "@payloadcms/richtext-lexical": "3.92.1",
+    "@payloadcms/storage-s3": "3.92.1",
+    "@payloadcms/ui": "3.92.1",
+    "cross-env": "^7.0.3",
+    "drizzle-kit": "0.31.7",
+    "next": "16.4.3",
+    "payload": "3.92.1",
+    "pg": "^8.16.3",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "^1.8.0",
+    "@types/node": "^24",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.7.3",
+    "wrangler": "^4.45.0"
+  }
+}

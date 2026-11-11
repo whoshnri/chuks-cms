@@ -1,0 +1,11 @@
+# Local development only. In production, set these with `wrangler secret put`.
+PAYLOAD_SECRET=replace-with-a-long-random-secret
+CMS_INTERNAL_TOKEN=copy-the-same-random-token-used-by-api
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
+CMS_PUBLIC_URL=https://cms.example.com
+R2_BUCKET=replace-with-r2-bucket-name
+R2_ENDPOINT=https://replace-with-account-id.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=replace-with-r2-access-key-id
+R2_SECRET_ACCESS_KEY=replace-with-r2-secret-access-key
+PAYLOAD_ADMIN_EMAIL=admin@example.com
+PAYLOAD_ADMIN_PASSWORD=choose-a-long-unique-password
