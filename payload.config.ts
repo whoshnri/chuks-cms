@@ -10,11 +10,10 @@ import { Comments } from './src/collections/Comments'
 import { ContactSubmissions } from './src/collections/ContactSubmissions'
 import { Media } from './src/collections/Media'
 
-const isHyperdrive = Boolean(runtimeEnv.HYPERDRIVE?.connectionString)
 const databaseURL = runtimeEnv.HYPERDRIVE?.connectionString || process.env.DATABASE_URL || runtimeEnv.DATABASE_URL || 'postgres://placeholder:placeholder@127.0.0.1:5432/placeholder'
-console.info(`CMS database transport: ${isHyperdrive ? 'Hyperdrive' : 'direct Neon'}`)
 const isProduction = process.env.NODE_ENV === 'production'
-const productionServerURL = 'https://chuks-payload-cms.chuks-etuka.workers.dev'
+const deploymentURL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
+const productionServerURL = process.env.CMS_PUBLIC_URL || runtimeEnv.CMS_PUBLIC_URL || deploymentURL || 'https://chuks-payload-cms.chuks-etuka.workers.dev'
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || runtimeEnv.PAYLOAD_SECRET || 'local-only-change-this-payload-secret-before-deploy',
