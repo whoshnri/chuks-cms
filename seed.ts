@@ -2,59 +2,87 @@ export {}
 
 process.env.PAYLOAD_PUSH = 'false'
 
-const [{ default: config }, { getPayload }, { insightArticles, insightCategories }] = await Promise.all([
-  import('./payload.config'),
-  import('payload'),
-  import('../web/components/insights-data'),
-])
-const { paragraphsToArticleBody } = await import('./src/lib/article-content')
+import { readFile } from 'node:fs/promises'
 
-const payload = await getPayload({ config })
-let createdArticles = 0
-let existingArticles = 0
+function parseCSV(input: string): Record<string, string>[] {
+  const rows: string[][] = []
+  let row: string[] = []
+  let field = ''
+  let quoted = false
+  const text = input.replace(/^﻿/, '')
 
-for (const category of insightCategories) {
-  const found = await payload.find({ collection: 'categories', where: { slug: { equals: category.slug } }, limit: 1, overrideAccess: true })
-  if (!found.docs.length) await payload.create({ collection: 'categories', data: category, overrideAccess: true })
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i]
+    if (quoted) {
+      if (char === '"' && text[i + 1] === '"') { field += '"'; i += 1 }
+      else if (char === '"') quoted = false
+      else field += char
+    } else if (char === '"') quoted = true
+    else if (char === ',') { row.push(field); field = '' }
+    else if (char === '\n' || char === '\r') {
+      if (char === '\r' && text[i + 1] === '\n') i += 1
+      row.push(field); field = ''
+      if (row.some((value) => value !== '')) rows.push(row)
+      row = []
+    } else field += char
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row) }
+
+  const [header, ...records] = rows
+  return records.map((record) => Object.fromEntries(header.map((name, index) => [name, record[index] ?? ''])))
 }
 
-for (const article of insightArticles) {
-  const found = await payload.find({
-    collection: 'posts',
-    where: { slug: { equals: article.slug } },
-    limit: 1,
-    overrideAccess: true,
-    context: { skipLegacyArticleBodyHydration: true },
-  })
-  if (found.docs.length) {
-    if (!found.docs[0].body) {
-      await payload.update({
-        collection: 'posts',
-        id: found.docs[0].id,
-        data: { body: paragraphsToArticleBody(article.paragraphs) },
-        overrideAccess: true,
-      })
-    }
-    existingArticles += 1
-    continue
+const file = 'data/linkedin-posts.csv'
+const rows = parseCSV(await readFile(file, 'utf8'))
+
+const [{ default: config }, { getPayload }] = await Promise.all([import('./payload.config'), import('payload')])
+const payload = await getPayload({ config })
+
+// Delete all existing posts
+const allPosts = await payload.find({ collection: 'posts', limit: 1000, depth: 0, overrideAccess: true, context: { skipLegacyArticleBodyHydration: true } })
+for (const post of allPosts.docs) {
+  await payload.delete({ collection: 'posts', id: post.id, overrideAccess: true })
+}
+console.info(`Deleted ${allPosts.docs.length} existing posts.`)
+
+// Delete all existing categories
+const allCategories = await payload.find({ collection: 'categories', limit: 1000, depth: 0, overrideAccess: true })
+for (const cat of allCategories.docs) {
+  await payload.delete({ collection: 'categories', id: cat.id, overrideAccess: true })
+}
+console.info(`Deleted ${allCategories.docs.length} existing categories.`)
+
+// Seed categories and posts from CSV
+const categoryIDs = new Map<string, number | string>()
+let created = 0
+
+for (const row of rows) {
+  if (!categoryIDs.has(row.categorySlug)) {
+    const category = await payload.create({ collection: 'categories', data: { label: row.category, slug: row.categorySlug }, overrideAccess: true })
+    categoryIDs.set(row.categorySlug, category.id)
   }
-  const category = await payload.find({ collection: 'categories', where: { slug: { equals: article.categorySlug } }, limit: 1, overrideAccess: true })
-  const categoryID = category.docs[0]?.id
-  if (!categoryID) throw new Error(`Missing category ${article.categorySlug}`)
+
+  const status = row._status === 'published' ? 'published' : 'draft'
   await payload.create({
     collection: 'posts',
-    draft: false,
+    draft: status === 'draft',
     overrideAccess: true,
     data: {
-      title: article.title, slug: article.slug, category: categoryID, categorySlug: article.categorySlug,
-      publishedAt: new Date(article.date).toISOString(), minutes: article.minutes, excerpt: article.excerpt,
-      image: article.image, imageAlt: article.imageAlt,
-      body: paragraphsToArticleBody(article.paragraphs),
-      content: article.paragraphs.map((paragraph) => ({ paragraph })), _status: 'published',
+      title: row.title,
+      slug: row.slug,
+      category: categoryIDs.get(row.categorySlug) as number,
+      categorySlug: row.categorySlug,
+      publishedAt: row.publishedAt ? new Date(row.publishedAt).toISOString() : undefined,
+      minutes: Number(row.minutes) || 5,
+      excerpt: row.excerpt,
+      image: row.image || undefined,
+      imageAlt: row.imageAlt || undefined,
+      body: JSON.parse(row.body),
+      _status: status,
     },
   })
-  createdArticles += 1
+  created += 1
 }
 
-console.info(`Seeded ${insightCategories.length} categories; created ${createdArticles} posts and kept ${existingArticles} existing posts.`)
+console.info(`Seeded ${categoryIDs.size} categories and ${created} posts from ${file}.`)
 process.exit(0)
