@@ -15,6 +15,7 @@
     "generate:types": "payload generate:types",
     "generate:importmap": "bun --env-file=.dev.vars scripts/generate-importmap.ts",
     "seed": "bun --env-file=.dev.vars seed.ts",
+    "import:posts": "bun --env-file=.dev.vars import-posts.ts",
     "create-admin": "bun run create-admin.ts"
   },
   "dependencies": {
