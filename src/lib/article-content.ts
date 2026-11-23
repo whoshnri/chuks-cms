@@ -49,16 +49,16 @@ export function paragraphsToArticleBody(paragraphs: string[]) {
   return {
     root: {
       children: sections.flatMap((section) => [
-        element(‘heading’, section.title),
+        element('heading', section.title),
         ...section.paragraphs.map((paragraph) => element(
-          paragraph.startsWith(‘People don’t stop speaking up’) ? ‘quote’ : ‘paragraph’,
+          paragraph.startsWith('People don't stop speaking up') ? 'quote' : 'paragraph',
           paragraph,
         )),
       ]),
-      direction: ‘ltr’ as const,
-      format: ‘’ as const,
+      direction: 'ltr' as const,
+      format: '' as const,
       indent: 0,
-      type: ‘root’ as const,
+      type: 'root' as const,
       version: 1 as const,
     },
   }
