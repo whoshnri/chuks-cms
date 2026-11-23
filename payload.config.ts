@@ -30,7 +30,7 @@ export default buildConfig({
       connectionTimeoutMillis: 30_000,
       allowExitOnIdle: true,
     },
-    push: !isProduction && process.env.PAYLOAD_PUSH !== 'false',
+    push: true,
   }),
   plugins: [
     s3Storage({
