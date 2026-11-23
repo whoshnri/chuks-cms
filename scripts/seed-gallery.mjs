@@ -67,14 +67,19 @@ async function uploadMedia(token, filePath, alt) {
   const form = new FormData()
   form.append('file', new Blob([file], { type: 'image/jpeg' }), basename(filePath))
   form.append('alt', alt)
+  form.append('_payload', JSON.stringify({ alt }))
 
   const res = await fetch(`${CMS_URL}/api/media`, {
     method: 'POST',
     headers: { Authorization: `JWT ${token}` },
     body: form,
   })
-  if (!res.ok) throw new Error(`Upload failed for ${basename(filePath)}: ${res.status} ${await res.text()}`)
-  const data = await res.json()
+  const text = await res.text()
+  if (!res.ok) {
+    console.error(`  Upload error (${res.status}): ${text.slice(0, 500)}`)
+    throw new Error(`Upload failed for ${basename(filePath)}: ${res.status}`)
+  }
+  const data = JSON.parse(text)
   console.log(`  Uploaded ${basename(filePath)} → media id ${data.doc.id}`)
   return data.doc.id
 }
