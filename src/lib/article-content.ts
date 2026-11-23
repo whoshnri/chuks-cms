@@ -51,7 +51,7 @@ export function paragraphsToArticleBody(paragraphs: string[]) {
       children: sections.flatMap((section) => [
         element('heading', section.title),
         ...section.paragraphs.map((paragraph) => element(
-          paragraph.startsWith('People don't stop speaking up') ? 'quote' : 'paragraph',
+          paragraph.startsWith("People don't stop speaking up") ? 'quote' : 'paragraph',
           paragraph,
         )),
       ]),
