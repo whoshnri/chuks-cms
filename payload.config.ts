@@ -9,6 +9,7 @@ import { Categories } from './src/collections/Categories'
 import { Comments } from './src/collections/Comments'
 import { ContactSubmissions } from './src/collections/ContactSubmissions'
 import { Media } from './src/collections/Media'
+import { Gallery } from './src/collections/Gallery'
 
 const databaseURL = runtimeEnv.HYPERDRIVE?.connectionString || process.env.DATABASE_URL || runtimeEnv.DATABASE_URL || 'postgres://placeholder:placeholder@127.0.0.1:5432/placeholder'
 const isProduction = process.env.NODE_ENV === 'production'
@@ -20,7 +21,7 @@ export default buildConfig({
   serverURL: isProduction ? productionServerURL : (process.env.CMS_PUBLIC_URL || runtimeEnv.CMS_PUBLIC_URL),
   admin: { user: Users.slug, importMap: { baseDir: process.cwd() } },
   editor: lexicalEditor(),
-  collections: [Users, Posts, Categories, Comments, ContactSubmissions, Media],
+  collections: [Users, Posts, Categories, Comments, ContactSubmissions, Media, Gallery],
   db: postgresAdapter({
     pool: {
       connectionString: databaseURL,

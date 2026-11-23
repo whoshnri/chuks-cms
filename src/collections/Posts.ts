@@ -34,9 +34,15 @@ export const Posts: CollectionConfig = {
     { name: 'publishedAt', type: 'date', admin: { position: 'sidebar' } },
     { name: 'minutes', type: 'number', min: 1, defaultValue: 5 },
     { name: 'excerpt', type: 'textarea', required: true },
-    { name: 'image', type: 'text' },
-    { name: 'imageAlt', type: 'text' },
-    { name: 'coverImage', type: 'relationship', relationTo: 'media' },
+    { name: 'image', type: 'text', admin: { hidden: true } },
+    { name: 'imageAlt', type: 'text', admin: { hidden: true } },
+    {
+      name: 'coverImage',
+      label: 'Cover image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Upload or select the article cover image.' },
+    },
     {
       name: 'body',
       label: 'Content',
