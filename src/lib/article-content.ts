@@ -10,8 +10,8 @@ type LexicalText = {
 
 type LexicalElement = {
   children: Array<LexicalElement | LexicalText>
-  direction: null
-  format: ''
+  direction: 'ltr' | null
+  format: '' | string
   indent: number
   tag?: 'h2'
   type: 'heading' | 'paragraph' | 'quote' | 'root'
@@ -27,7 +27,7 @@ function textNode(text: string): LexicalText {
 function element(type: 'heading' | 'paragraph' | 'quote', text: string): LexicalElement {
   return {
     children: [textNode(text)],
-    direction: null,
+    direction: 'ltr',
     format: '',
     indent: 0,
     ...(type === 'heading' ? { tag: 'h2' as const } : {}),
@@ -49,16 +49,16 @@ export function paragraphsToArticleBody(paragraphs: string[]) {
   return {
     root: {
       children: sections.flatMap((section) => [
-        element('heading', section.title),
+        element(‘heading’, section.title),
         ...section.paragraphs.map((paragraph) => element(
-          paragraph.startsWith('People don’t stop speaking up') ? 'quote' : 'paragraph',
+          paragraph.startsWith(‘People don’t stop speaking up’) ? ‘quote’ : ‘paragraph’,
           paragraph,
         )),
       ]),
-      direction: null,
-      format: '',
+      direction: ‘ltr’ as const,
+      format: ‘’ as const,
       indent: 0,
-      type: 'root' as const,
+      type: ‘root’ as const,
       version: 1 as const,
     },
   }
